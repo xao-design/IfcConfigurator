@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BIM Parametric Cube</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body { margin: 0; background-color: #1a1a1a; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        #ui-panel { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.7); padding: 20px; border-radius: 12px; border: 1px solid #444; width: 250px; }
+        .slider-group { margin-bottom: 20px; }
+        input[type=range] { width: 100%; cursor: pointer; }
+        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #0056b3; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <div id="ui-panel">
+        <h2>Product Configurator</h2>
+        <div class="slider-group">
+            <label id="size-label">Cube Size: 1m</label>
+            <input type="range" id="sizeSlider" min="0.5" max="5" step="0.1" value="1">
+        </div>
+        <button onclick="alert('IFC Export coming in Level 3!')">Export IFC</button>
+    </div>
+
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Add lighting (makes it look professional)
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(5, 5, 5).normalize();
+        scene.add(light);
+        scene.add(new THREE.AmbientLight(0x404040));
+
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshPhongMaterial({ color: 0x00d1b2 });
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+        camera.position.z = 5;
+
+        const slider = document.getElementById('sizeSlider');
+        const label = document.getElementById('size-label');
+
+        slider.addEventListener('input', (e) => {
+            const val = e.target.value;
+            cube.scale.set(val, val, val);
+            label.innerText = `Cube Size: ${val}m`;
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            cube.rotation.y += 0.005;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+    </script>
+</body>
+</html>
